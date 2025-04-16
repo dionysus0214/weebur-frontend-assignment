@@ -2,6 +2,14 @@
 
 import { FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Input from '../common/Input';
+import Select from '../common/Select';
+import Button from '../common/Button';
+
+const sortOptions = [
+  { value: '', label: '기본 정렬' },
+  { value: 'rating', label: '별점 높은 순' }
+];
 
 export default function ProductSearch() {
   const router = useRouter();
@@ -23,26 +31,21 @@ export default function ProductSearch() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mb-6">
       <div className="flex gap-4">
-        <input
+        <Input
           name="search"
           placeholder="상품 검색"
           defaultValue={searchParams.get('search') ?? ''}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+          className="flex-1"
         />
-        <select
+        <Select
           name="sort"
+          options={sortOptions}
           defaultValue={searchParams.get('sort') ?? ''}
-          className="px-3 py-2 border border-gray-300 rounded-md"
-        >
-          <option value="">기본 정렬</option>
-          <option value="rating">별점 높은 순</option>
-        </select>
-        <button 
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
+          className="w-40"
+        />
+        <Button type="submit" variant="primary">
           검색
-        </button>
+        </Button>
       </div>
     </form>
   );
