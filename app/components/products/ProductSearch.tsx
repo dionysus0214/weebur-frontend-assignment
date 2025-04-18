@@ -1,51 +1,51 @@
 'use client';
 
-import { FormEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { FormEvent, ChangeEvent } from 'react';
 import Input from '../common/Input';
 import Select from '../common/Select';
 import Button from '../common/Button';
+import { useSearchParamsHelper } from '@/hooks/useSearchParams';
+import { SORT_OPTIONS } from '@/constant/options';
 
-const sortOptions = [
-  { value: '', label: '기본 정렬' },
-  { value: 'rating', label: '별점 높은 순' }
-];
+interface ProductSearchProps {
+  isLoading?: boolean;
+}
 
-export default function ProductSearch() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export default function ProductSearch({ isLoading = false }: ProductSearchProps) {
+  const { updateSearch, updateSort, getCurrentSort, getSearchValue } = useSearchParamsHelper();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const search = formData.get('search')?.toString() || '';
-    const sort = formData.get('sort')?.toString() || '';
-    
-    const params = new URLSearchParams();
-    if (search) params.set('search', search);
-    if (sort) params.set('sort', sort);
-    
-    router.push(`/?${params.toString()}`);
+    updateSearch(search);
+  };
+
+  const handleSortChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    updateSort(e.target.value);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-      <div className="flex gap-4">
-        <Input
-          name="search"
-          placeholder="상품 검색"
-          defaultValue={searchParams.get('search') ?? ''}
-          className="flex-1"
-        />
+    <form onSubmit={handleSubmit} className="mb-6">
+      <div className="flex justify-between gap-4">
+        <div className="flex gap-2 flex-1">
+          <Input
+            name="search"
+            placeholder="상품 검색"
+            defaultValue={getSearchValue()}
+            className="w-sm"
+          />
+          <Button type="submit" variant="primary" size="md" isLoading={isLoading}>
+            검색
+          </Button>
+        </div>
         <Select
           name="sort"
-          options={sortOptions}
-          defaultValue={searchParams.get('sort') ?? ''}
+          options={SORT_OPTIONS}
+          defaultValue={getCurrentSort()}
+          onChange={handleSortChange}
           className="w-40"
         />
-        <Button type="submit" variant="primary">
-          검색
-        </Button>
       </div>
     </form>
   );
